@@ -12,6 +12,27 @@ export const redisConnection =
     password:
       process.env.REDIS_PASSWORD,
 
+    tls: {},
+
     maxRetriesPerRequest:
       null,
   })
+
+redisConnection.on(
+  "connect",
+  () => {
+    console.log(
+      "Redis Connected"
+    )
+  }
+)
+
+redisConnection.on(
+  "error",
+  (err) => {
+    console.log(
+      "Redis Error:",
+      err
+    )
+  }
+)
