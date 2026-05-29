@@ -11,6 +11,7 @@ export const initSocket = (
   "http://localhost:3000",
   process.env
     .FRONTEND_URL as string,
+  "https://assessment-generator-nine.vercel.app",
 ],
       methods: [
         "GET",

@@ -15,17 +15,23 @@ const server =
 
 initSocket(server)
 
-app.use(
-  cors({
-    origin: [
-      "http://localhost:3000",
-      process.env
-        .FRONTEND_URL as string,
-    ],
+// Allow requests from local dev and deployed frontend; reflect origin dynamically
+const FRONTEND_URL = process.env.FRONTEND_URL || "https://assessment-generator-nine.vercel.app"
+const allowedOrigins = ["http://localhost:3000", FRONTEND_URL]
 
-    credentials: true,
-  })
-)
+app.use((req, res, next) => {
+  const origin = req.headers.origin
+  if (origin && allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin)
+    res.header("Access-Control-Allow-Credentials", "true")
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+  }
+  // Handle preflight
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204)
+  }
+  next()
+})
 
 app.use(express.json())
 
