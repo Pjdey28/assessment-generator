@@ -19,19 +19,21 @@ initSocket(server)
 const FRONTEND_URL = process.env.FRONTEND_URL || "https://assessment-generator-nine.vercel.app"
 const allowedOrigins = ["http://localhost:3000", FRONTEND_URL]
 
-app.use((req, res, next) => {
-  const origin = req.headers.origin
-  if (origin && allowedOrigins.includes(origin)) {
-    res.header("Access-Control-Allow-Origin", origin)
-    res.header("Access-Control-Allow-Credentials", "true")
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
-  }
-  // Handle preflight
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(204)
-  }
-  next()
-})
+// Use the `cors` package to handle CORS and preflight properly
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like server-to-server or CURL)
+      if (!origin) return callback(null, true)
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true)
+      }
+      return callback(new Error("Not allowed by CORS"))
+    },
+    credentials: true,
+  })
+)
+app.options("*", cors())
 
 app.use(express.json())
 
