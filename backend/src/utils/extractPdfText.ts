@@ -1,8 +1,12 @@
-// pdf-parse may export the parser as the module itself or as the default property
-const pdfParseModule = require("pdf-parse")
-const pdfParse = typeof pdfParseModule === "function" ? pdfParseModule : pdfParseModule.default
-
+// Use dynamic import to handle CJS/ESM export shapes across environments
 export const extractPdfText = async (buffer: Buffer) => {
-  const data = await pdfParse(buffer)
-  return data.text
+  const pdfParseModule = await import("pdf-parse")
+  const pdfParse = (pdfParseModule && (pdfParseModule as any).default) || (pdfParseModule as any)
+
+  if (typeof pdfParse !== "function") {
+    throw new Error("pdf-parse module did not export a function")
+  }
+
+  const data = await (pdfParse as any)(buffer)
+  return data?.text || ""
 }
