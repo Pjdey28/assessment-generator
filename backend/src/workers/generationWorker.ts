@@ -13,10 +13,12 @@ new Worker(
     try {
       const { assignmentId } = job.data
 
-      const assignment =
-        await Assignment.findById(
-          assignmentId
-        )
+      if (!assignmentId) {
+        console.warn("generationWorker: missing assignmentId in job", job.id)
+        return
+      }
+
+      const assignment = await Assignment.findById(assignmentId)
 
       if (!assignment) return
 

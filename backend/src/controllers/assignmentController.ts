@@ -92,25 +92,46 @@ export const getAssignmentById =
     req: Request,
     res: Response
   ) => {
-    const assignment =
-      await Assignment.findById(
-        req.params.id
-      )
+    try {
+      const id = req.params.id
+      if (!id) {
+        return res.status(400).json({ success: false, message: "Missing id" })
+      }
 
-    res.json(assignment)
+      const assignment = await Assignment.findById(id)
+      if (!assignment) {
+        return res.status(404).json({ success: false })
+      }
+
+      res.json(assignment)
+    } catch (error: any) {
+      console.error("getAssignmentById error:", error)
+      if (error?.name === "CastError") {
+        return res.status(400).json({ success: false, message: "Invalid id" })
+      }
+      res.status(500).json({ success: false })
+    }
   }
 export const deleteAssignment =
   async (
     req: Request,
     res: Response
   ) => {
-    await Assignment.findByIdAndDelete(
-      req.params.id
-    )
+    try {
+      const id = req.params.id
+      if (!id) {
+        return res.status(400).json({ success: false, message: "Missing id" })
+      }
 
-    res.json({
-      success: true,
-    })
+      const deleted = await Assignment.findByIdAndDelete(id)
+      if (!deleted) return res.status(404).json({ success: false })
+
+      res.json({ success: true })
+    } catch (error: any) {
+      console.error("deleteAssignment error:", error)
+      if (error?.name === "CastError") return res.status(400).json({ success: false, message: "Invalid id" })
+      res.status(500).json({ success: false })
+    }
   }
   export const regenerateAssignment =
   async (
@@ -124,9 +145,7 @@ export const deleteAssignment =
         )
 
       if (!assignment) {
-        return res.status(404).json({
-          success: false,
-        })
+        return res.status(404).json({ success: false })
       }
 
       assignment.status =
@@ -148,9 +167,9 @@ export const deleteAssignment =
       res.json({
         success: true,
       })
-    } catch {
-      res.status(500).json({
-        success: false,
-      })
+    } catch (error: any) {
+      console.error("regenerateAssignment error:", error)
+      if (error?.name === "CastError") return res.status(400).json({ success: false, message: "Invalid id" })
+      res.status(500).json({ success: false })
     }
   }
