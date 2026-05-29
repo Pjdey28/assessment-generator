@@ -76,11 +76,16 @@ export const getAssignments = async (
   _: Request,
   res: Response
 ) => {
-  const assignments = await Assignment.find().sort({
-    createdAt: -1,
-  })
+  try {
+    const assignments = await Assignment.find().sort({
+      createdAt: -1,
+    })
 
-  res.json(assignments)
+    res.json(assignments)
+  } catch (error) {
+    console.error('getAssignments error:', error)
+    res.status(500).json({ success: false, message: 'Server error fetching assignments' })
+  }
 }
 export const getAssignmentById =
   async (

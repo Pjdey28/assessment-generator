@@ -56,6 +56,15 @@ app.get("/", (_, res) => {
   res.send("API Running")
 })
 
+// Debug route to echo request headers and CORS info
+app.get("/api/debug", (req, res) => {
+  res.json({
+    headers: req.headers,
+    allowedOrigins,
+    frontendEnv: process.env.FRONTEND_URL || null,
+  })
+})
+
 const PORT =
   process.env.PORT || 5000
 
