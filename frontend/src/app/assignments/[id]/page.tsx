@@ -16,26 +16,23 @@ import MobileNavbar from "@/components/dashboard/MobileNavbar"
 export default function AssignmentPage({
   params,
 }: any) {
-  
-  const [assignment, setAssignment] =
-    useState<any>(null)
+  const [assignment, setAssignment] = useState<any>(null);
 
-  const fetchAssignment =
-    async () => {
-      const res =
-        await api.get(
-          `/assignments/${params.id}`
-        )
+const fetchAssignment = async () => {
+  // 1. Double check that params.id exists before making the API call
+  if (!params?.id || params.id === 'undefined') return;
 
-      setAssignment(
-        res.data
-      )
-    }
+  try {
+    const res = await api.get(`/assignments/${params.id}`);
+    setAssignment(res.data);
+  } catch (err) {
+    console.error("Error fetching assignment:", err);
+  }
+};
 
-  useEffect(() => {
-    fetchAssignment()
-  }, [])
-
+useEffect(() => {
+  fetchAssignment();
+}, [params?.id]);
   if (!assignment)
     return (
       <div>
@@ -58,7 +55,7 @@ export default function AssignmentPage({
             
             <div className="bg-black text-white rounded-3xl p-8 mb-8">
               
-              <h1 className="text-2xl font-bold">
+              <h1 className="text-2xl md:text-3xl font-bold">
                 Generated Assignment
               </h1>
 
@@ -89,7 +86,7 @@ export default function AssignmentPage({
         
         <div className="mb-8">
           
-          <h2 className="text-3xl font-bold">
+          <h2 className="text-2xl md:text-3xl font-bold">
             {section.title}
           </h2>
 
@@ -123,7 +120,7 @@ export default function AssignmentPage({
                   </div>
 
                   <div className="flex items-center gap-3 shrink-0">
-                    
+    
                     <DifficultyBadge
                       difficulty={
                         q.difficulty
